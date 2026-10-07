@@ -32,14 +32,14 @@ export const actions: Actions = {
     }
 
     const isValid = await argon2.verify(user[0].passwordHash, password);
-    
+
     if (!isValid) {
       return fail(401, {
         error: "Email atau password salah.",
       });
     }
 
-    const sessionId = createSession(user[0].id);
+    const sessionId = await createSession(user[0].id);
 
     cookies.set("session", sessionId, {
       path: "/",

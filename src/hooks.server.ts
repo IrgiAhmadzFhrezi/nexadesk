@@ -9,7 +9,7 @@ export const handle: Handle = async ({ event, resolve }) => {
   const sessionId = event.cookies.get("session");
 
   if (sessionId) {
-    const userId = getUserId(sessionId);
+    const userId = await getUserId(sessionId);
 
     if (userId) {
       const result = await db

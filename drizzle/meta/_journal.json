@@ -71,6 +71,13 @@
       "when": 1791351581528,
       "tag": "0009_large_firelord",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1791360854308,
+      "tag": "0010_useful_blindfold",
+      "breakpoints": true
     }
   ]
 }

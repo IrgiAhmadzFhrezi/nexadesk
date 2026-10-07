@@ -90,3 +90,13 @@ export const ticketActivities = pgTable("ticket_activities", {
     .defaultNow()
     .notNull(),
 });
+
+export const sessions = pgTable("sessions", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+
+  userId: integer("user_id")
+    .notNull()
+    .references(() => users.id),
+
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+});
