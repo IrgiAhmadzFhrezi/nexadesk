@@ -1,0 +1,1 @@
+ALTER TABLE "tickets" ADD COLUMN "solution" varchar(2000);
