@@ -4,7 +4,10 @@
 
 NexaDesk is a web-based IT Helpdesk Management System designed to manage internal IT support requests, ticket assignments, issue resolution, and user access within an organization.
 
-This project was built as a portfolio project to demonstrate practical experience in **full-stack web development, database design, authentication, role-based access control, and server-side application development**.
+This project was built as a portfolio project to demonstrate practical experience in **full-stack web development, database design, authentication, role-based access control, server-side application development, and production deployment**.
+
+**Live Demo:** [NexaDesk](https://nexadesk-8d7s.vercel.app/)
+**Repository:** [GitHub](https://github.com/IrgiAhmadzFhrezi/nexadesk)
 
 ---
 
@@ -34,16 +37,42 @@ Different user roles have different permissions and responsibilities within the 
 
 ---
 
+## Screenshots
+
+### Login
+
+![NexaDesk Login](static/login-page.png)
+
+### Dashboard
+
+![NexaDesk Dashboard](static/Dashboard.jpeg)
+
+### Ticket Management
+
+![NexaDesk Tickets](static/tickets.jpeg)
+
+### Ticket Detail
+
+![NexaDesk Ticket Detail](static/Detail-tickets.jpeg)
+
+### Category Management
+
+![NexaDesk Categories](static/categories.jpeg)
+
+---
+
 ## Features
 
 ### Authentication
 
 - Login using email and password
 - Password hashing with Argon2
-- Server-side session management
+- Database-backed server-side session management
 - HTTP-only session cookies
+- Session expiration
 - Protected application routes
 - Role-based authorization
+- Logout and session invalidation
 
 ### Role-Based Access Control
 
@@ -87,7 +116,7 @@ Employee
           └── IT Support takes ticket
           │
           ▼
-      ASSIGNED
+       ASSIGNED
           │
           ▼
      IN_PROGRESS
@@ -95,17 +124,16 @@ Employee
       /         \
      ▼           ▼
 WAITING_USER   RESOLVED
-     │            │
-     └──────┐     │
-            │     │
-            ▼     ▼
-       IN_PROGRESS
-            │
-            ▼
-         RESOLVED
-            │
-            ▼
-          CLOSED
+     │             │
+     │             │
+     ▼             ▼
+IN_PROGRESS     CLOSED
+     │
+     ▼
+  RESOLVED
+     │
+     ▼
+   CLOSED
 ```
 
 ### User Management
@@ -158,17 +186,17 @@ The interface is designed for:
 - Tablet
 - Mobile
 
-The application includes a responsive sidebar navigation for smaller screens.
+The application includes responsive navigation for smaller screens.
 
 ---
 
 ## User Roles
 
-| Role       | Responsibilities                                                                      |
-| ---------- | ------------------------------------------------------------------------------------- |
-| Employee   | Create tickets, view own tickets, comment, and close resolved tickets                 |
-| IT Support | Manage assigned tickets, take open tickets, update status, add solutions, and comment |
-| Admin      | Manage users, categories, tickets, assignments, and system access                     |
+| Role           | Responsibilities                                                                      |
+| -------------- | ------------------------------------------------------------------------------------- |
+| **Employee**   | Create tickets, view own tickets, comment, and close resolved tickets                 |
+| **IT Support** | Manage assigned tickets, take open tickets, update status, add solutions, and comment |
+| **Admin**      | Manage users, categories, tickets, assignments, and system access                     |
 
 ### Assignment Rules
 
@@ -199,14 +227,15 @@ This keeps ticket assignment controlled while still allowing support staff to pi
 
 - PostgreSQL
 - Drizzle ORM
+- Drizzle Kit
 
 ### Runtime & Tooling
 
 - Bun
 - Vite
-- Drizzle Kit
 - Git
 - GitHub
+- Vercel
 
 ---
 
@@ -259,6 +288,10 @@ departments
               ├──── ticket_comments
               │
               └──── ticket_activities
+
+sessions
+    │
+    └──── users
 ```
 
 ### Main Tables
@@ -300,7 +333,7 @@ Stores comments and conversations related to tickets.
 
 #### `ticket_activities`
 
-Stores important actions performed on tickets.
+Stores important actions and status changes performed on tickets.
 
 #### `categories`
 
@@ -310,12 +343,17 @@ Stores available ticket categories.
 
 Stores organizational departments.
 
+#### `sessions`
+
+Stores server-side authentication sessions and their expiration time.
+
 ---
 
 ## Project Structure
 
 ```text
 nexadesk/
+│
 ├── drizzle/
 │   └── migrations/
 │
@@ -350,6 +388,11 @@ nexadesk/
 │       └── logout/
 │
 ├── static/
+│   ├── Dashboard.jpeg
+│   ├── Detail-tickets.jpeg
+│   ├── categories.jpeg
+│   ├── login-page.png
+│   └── tickets.jpeg
 │
 ├── .gitignore
 ├── .npmrc
@@ -436,6 +479,44 @@ DATABASE_URL="postgresql://postgres:YOUR_PASSWORD@localhost:5432/nexadesk"
 
 The `.env` file is excluded from version control through `.gitignore`.
 
+For production deployment, the database connection string is configured through the hosting platform's environment variables.
+
+---
+
+## Production Deployment
+
+NexaDesk is deployed using **Vercel** with **Supabase PostgreSQL** as the production database.
+
+```text
+User
+ │
+ ▼
+Vercel
+ │
+ ▼
+SvelteKit
+ │
+ ├── Authentication
+ ├── Server-side Logic
+ └── Drizzle ORM
+       │
+       ▼
+   Supabase
+   PostgreSQL
+```
+
+The production application has been tested for:
+
+- User authentication
+- Session management
+- Ticket creation
+- Ticket assignment
+- Ticket status transitions
+- Comments
+- Activity history
+- Ticket resolution
+- Ticket closure
+
 ---
 
 ## Security
@@ -443,13 +524,15 @@ The `.env` file is excluded from version control through `.gitignore`.
 The application implements several basic security practices:
 
 - Passwords are hashed using Argon2
-- Authentication uses server-side sessions
+- Authentication uses database-backed server-side sessions
 - Session cookies use `HttpOnly`
+- Sessions have expiration times
 - Role-based authorization is enforced on the server
 - Database credentials are stored in environment variables
 - Administrator routes are protected by role checks
 - Categories cannot be deleted while referenced by tickets
 - Users with related tickets cannot be deleted
+- Authentication sessions can be invalidated during logout
 
 ---
 
@@ -471,9 +554,12 @@ This project allowed me to practice and apply several software engineering conce
 - Database migrations
 - CRUD operations
 - Ticket workflow design
+- Activity logging
 - Responsive UI development
-- Git and GitHub
 - Error handling and validation
+- Git and GitHub
+- Production deployment with Vercel
+- PostgreSQL deployment with Supabase
 
 ---
 
@@ -481,15 +567,16 @@ This project allowed me to practice and apply several software engineering conce
 
 Potential improvements for future versions include:
 
-- Persistent database-backed sessions
 - Email notifications
 - File attachments
 - Ticket SLA tracking
-- Advanced reporting
-- Pagination
+- Advanced reporting and analytics
+- Pagination for large datasets
 - Automated testing
-- Production deployment
 - CI/CD pipeline
+- More granular permission management
+- Improved audit logging
+- Performance optimization for larger datasets
 
 ---
 
@@ -499,7 +586,7 @@ Potential improvements for future versions include:
 
 Computer Engineering Graduate
 
-Built with SvelteKit, TypeScript, PostgreSQL, and Drizzle ORM.
+NexaDesk was built as a portfolio project to demonstrate practical software engineering skills using SvelteKit, TypeScript, PostgreSQL, Drizzle ORM, and modern web development practices.
 
 ---
 
